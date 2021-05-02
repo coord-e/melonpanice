@@ -21,19 +21,30 @@ async function incrementExplosionCount(): Promise<void> {
   }
 }
 
-export default async function incrementSize(): Promise<void> {
+function axisToIncrement(axis: "x" | "y" | "both") {
+  switch (axis) {
+    case "x":
+      return { x: increment };
+    case "y":
+      return { y: increment };
+    case "both":
+      return { x: increment, y: increment };
+  }
+}
+
+export default async function incrementSize(
+  axis: "x" | "y" | "both"
+): Promise<void> {
   try {
-    await melonpanice.update({
-      x: increment,
-      y: increment
-    });
+    await melonpanice.update(axisToIncrement(axis));
 
     const doc = await melonpanice.get();
-    const { x } = doc.data()!;
-    if (x > 100) {
+    const { x, y } = doc.data()!;
+    if (x * y > 10000) {
       debounce(async () => {
         await melonpanice.update({
-          x: 10
+          x: 10,
+          y: 10
         });
         await incrementExplosionCount();
       }, 700)();

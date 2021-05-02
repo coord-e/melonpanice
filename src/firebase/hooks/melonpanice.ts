@@ -33,8 +33,8 @@ export function useInitialExplosionCount(): number {
         throw new Error("Data does not exist");
       }
       const { explosion_count } = data;
-      setCount(explosion_count)
-    })
+      setCount(explosion_count);
+    });
   }, []);
 
   return count;

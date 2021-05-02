@@ -4,13 +4,15 @@ import { useSize } from "../firebase/hooks/melonpanice";
 import incrementSize from "../firebase/incrementSize";
 
 type ImgProps = {
-  size: number;
+  width: number;
+  height: number;
 };
 
 const Img = styled.img`
-  width: ${(props: ImgProps) => `${props.size}vw`};
-  height: ${(props: ImgProps) => `${props.size}vw`};
+  width: ${(props: ImgProps) => `${props.width}vw`};
+  height: ${(props: ImgProps) => `${props.height}vw`};
   margin: 0 auto;
+  position: absolute;
 `;
 
 const Heading1 = styled.h1`
@@ -20,31 +22,39 @@ const Heading1 = styled.h1`
 
 type Props = {
   incrementCount: () => void;
-}
+  axis: "x" | "y" | "both";
+};
 
-const MelonpanIce: React.FC<Props> = ({ incrementCount }) => {
+const MelonpanIce: React.FC<Props> = ({ incrementCount, axis }) => {
   const size = useSize();
 
   useEffect(() => {
     if (size === null) return;
-    const { x } = size;
-    if (x === 100) {
+    const { x, y } = size;
+    if (x * y >= 10000) {
       incrementCount();
     }
-  }, [size])
+  }, [size]);
 
   if (size === null) return null;
 
   // よく考えたらXとYを持つ必要なかった。
-  const { x } = size;
+  const { x, y } = size;
 
-  if (x > 100) {
+  if (x * y > 10000) {
     return <Heading1>爆発</Heading1>;
   }
 
-  return <Img size={x} src="./logo.png" onClick={async () => {
-    incrementSize();
-  }} />;
+  return (
+    <Img
+      width={x}
+      height={y}
+      src="./logo.png"
+      onClick={async () => {
+        incrementSize(axis);
+      }}
+    />
+  );
 };
 
 export default React.memo(MelonpanIce);
